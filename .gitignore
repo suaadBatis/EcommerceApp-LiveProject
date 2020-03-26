@@ -1,0 +1,15 @@
+#.gitignore
+.idea/workspace.xml
+.idea/
+/.idea/workspace.xml
+/.idea/libraries
+#Ignore Gradle GUI config
+.gradle/
+.gradle
+.gradletasknamecache
+!gradle-wrapper.jar
+gradle-app.setting
+*.iml
+/local.properties
+.DS_Store
+/build
