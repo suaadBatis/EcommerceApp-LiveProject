@@ -1,16 +1,20 @@
 
 import io.appium.java_client.MobileElement;
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.AssertJUnit.assertNotNull;
+import static io.appium.java_client.touch.LongPressOptions.longPressOptions;
+import static io.appium.java_client.touch.TapOptions.tapOptions;
+import static io.appium.java_client.touch.offset.ElementOption.element;
+import static java.time.Duration.ofSeconds;
+import static org.testng.AssertJUnit.*;
 
 public class HomePageScren extends BaseClass {
     @Test(priority = 1)
@@ -70,15 +74,16 @@ public class HomePageScren extends BaseClass {
         String lastpageText = driver.findElement(By.id("com.androidsample.generalstore:id/productName")).getText();
         Assert.assertEquals("Jordan 6 Rings", lastpageText);
     }
+
     @Test(dependsOnMethods = "CheckoutScreen", priority = 5)
     public void totalAmount() throws InterruptedException {
-       driver.findElementById("com.androidsample.generalstore:id/appbar_btn_back").click();
-       driver.findElementById("com.androidsample.generalstore:id/appbar_btn_back").click();
-       driver.findElementById("com.androidsample.generalstore:id/btnLetsShop").click();
-       By.xpath("//*[@text='ADD TO CART']").findElements(driver).get(0).click();
-       By.xpath("//*[@text='ADD TO CART']").findElements(driver).get(0).click();
+        driver.findElementById("com.androidsample.generalstore:id/appbar_btn_back").click();
+        driver.findElementById("com.androidsample.generalstore:id/appbar_btn_back").click();
+        driver.findElementById("com.androidsample.generalstore:id/btnLetsShop").click();
+        By.xpath("//*[@text='ADD TO CART']").findElements(driver).get(0).click();
+        By.xpath("//*[@text='ADD TO CART']").findElements(driver).get(0).click();
 
-       driver.findElement(By.id("com.androidsample.generalstore:id/appbar_btn_cart")).click();
+        driver.findElement(By.id("com.androidsample.generalstore:id/appbar_btn_cart")).click();
         Thread.sleep(1000);
         // assert amount
         MobileElement element = (MobileElement) driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).get(0);
@@ -86,18 +91,48 @@ public class HomePageScren extends BaseClass {
         double amountValue1 = Double.parseDouble(amount1);// to let the number as double
 
 
-
         MobileElement element2 = (MobileElement) driver.findElements(By.id("com.androidsample.generalstore:id/productPrice")).get(1);
         String amount2 = element2.getText().substring(1);
         double amountValue2 = Double.parseDouble(amount2);
 
         System.out.println(amountValue1);
-        System.out.println(amountValue2 );
-        double total = amountValue2+amountValue1;
+        System.out.println(amountValue2);
+        double Sumtotal = amountValue2 + amountValue1;
+        // to check the calculation of the sum product = to the total amount
+        String total = driver.findElement(By.id("com.androidsample.generalstore:id/totalAmountLbl")).getText();
+        total = total.substring(1);
+        double totalValue = Double.parseDouble(total);
 
-        System.out.println(total);
+        assertEquals(Sumtotal, totalValue);
+
+        System.out.println(Sumtotal);
+        System.out.println(totalValue);
+
+    }
+    @Test(dependsOnMethods = "totalAmount" )
+    public void  mobileGestures() throws InterruptedException {
+
+        MobileElement checkbox = (MobileElement) driver.findElementByClassName("android.widget.CheckBox");
+        Assert.assertTrue("checkbox",true);
 
 
+        //checkbox.click();
+       TouchAction t = new TouchAction(driver);
+       t.tap(tapOptions().withElement(element(checkbox))).perform();
+       MobileElement tc = (MobileElement) driver.findElementByXPath("*//*[@text='Please read our terms of conditions']");
+        t.longPress(longPressOptions().withElement(element(tc)).withDuration(ofSeconds(2))).release().perform();
+        MobileElement clickText = (MobileElement) driver.findElementById("android:id/button1");
+        t.tap(tapOptions().withElement(element(clickText))).perform();
+        driver.findElementById("com.androidsample.generalstore:id/btnProceed").click();
+    }
+  @Test(dependsOnMethods = "mobileGestures")
+  public void WebPage(){
+
+  }
+    public double getAmount(String value) {
+        value = value.substring(1);
+        double amountValue2 = Double.parseDouble(value);
+        return amountValue2;
     }
 
 }
